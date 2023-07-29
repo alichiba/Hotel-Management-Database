@@ -1,0 +1,41 @@
+﻿Timeline/Breakdown
+
+
+
+
+* July 29: Check-In (Milestone 3) - Set up files/github for everyone to access
+* July 30: Each person starts writing their SQL queries (10 in total, approx 3 per person/around 3 marks each. One person will have to do slightly more. Someone who is doing less can also set up the skeleton for the GUI to even it out)
+* July 31: ^^
+* August 1: Finish off SQL Queries and start implementing into GUI
+* August 2: Each person implements their queries into GUI (adjust query as needed)
+* August 3: Each person implements their queries into GUI (adjust query as needed)
+* August 4: Finish GUI with (hopefully) working SQL queries
+* August 5: Troubleshoot/Review each others parts (Avi & Elena away)
+* August 6: Troubleshoot/Review each others parts (Avi & Elena away)
+* August 7: Troubleshoot/Review each others parts (Avi & Elena away)
+* August 8: Decide who will present what for group demo
+* August 9: Submit - practice demo/running through code (each person presents what they worked on)
+
+
+[DUE] August 9, 2023 - Milestone 4, Project Implementation
+[DUE] August 11, 2023 - Milestone 5, Group Demo
+[DUE] August 11, 2023 - Milestone 6, Individual and Peer Assessment
+
+
+
+
+Challenges/Things Left to Do 
+* August 5-7 Long Weekend
+   * Avi and Elena will be away for the long weekend, but we will mitigate the effects of our absence by working as much on the implementation as possible beforehand to reduce the amount of work we will have afterwards.
+* PHP Learning Curve
+   * Since the three of us have never worked with PHP before, we will have to overcome a learning curve within a short amount of time. We will utilize resources such as YouTube, GitHub repos, and TAs to ensure we can implement our project with as minimal bugs and as smoothly as possible. 
+
+
+
+
+Commited? GitHub Link Here
+* Timeline
+* ReadME
+* Milestone 1
+* Milestone 2
+* .sql Files
