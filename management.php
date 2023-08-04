@@ -181,7 +181,7 @@
             global $db_conn;
 
             $result = executePlainSQL("SELECT R.hotelName, COUNT(*) AS numOfCustomers FROM Reservation R
-                                       GROUP BY R.hotelName, ORDER BY numOfCustomers ASC");
+                                       GROUP BY R.hotelName ORDER BY numOfCustomers ASC");
 
             if (($row = oci_fetch_row($result)) != false) {
                 echo "<br> The number of available rooms are: " . $row[0] . "<br>";
