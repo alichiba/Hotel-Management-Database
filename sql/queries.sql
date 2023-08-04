@@ -2,7 +2,7 @@
 -- "Select the room number, floor, status, hotel name and hotel address for the available rooms"
 SELECT roomNum, floor, status, hotelName, hotelAddress
     FROM Room
-    WHERE status = 'AVAILABLE';
+    WHERE status = 'Available';
 
 -- JOIN QUERY
 -- "Select the room number, floor, status, staff ID, full name of the staff associated to the room based on the input
