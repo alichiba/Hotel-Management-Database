@@ -204,7 +204,7 @@
             // A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
         function handleGETRequest() {
             if (connectToDB()) {
-                if (array_key_exists('countRooms', $_GET)) {
+                if (array_key_exists('countCustomers', $_GET)) {
                     handleCountRequest();
                 }
 
