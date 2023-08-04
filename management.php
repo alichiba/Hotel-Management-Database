@@ -212,7 +212,7 @@
            }
         }
 
-        if (isset($_POST['joinSubmit']){
+        if (isset($_POST['joinSubmit'])){
             handlePOSTRequest();
         } else if (isset($_GET['countCustomerRequest'])) {
              handleGETRequest();
