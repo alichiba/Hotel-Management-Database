@@ -7,7 +7,7 @@ CREATE TABLE HotelLocation (
  	hotelName		CHAR(20),
  	hotelAddress   	CHAR(30),
  	city			CHAR(20),
- 	PRIMARY KEY (hotelName, hotelAddress)
+ 	PRIMARY KEY (hotelName, hotelAddress),
  	FOREIGN KEY (city) REFERENCES CitySeason(city));
 
 CREATE TABLE EmailPassword (
@@ -25,7 +25,7 @@ CREATE TABLE Customer (
 	firstName	CHAR(20),
 	lastName	CHAR(20),
 	email		CHAR(30),
-	PRIMARY KEY (customerID)
+	PRIMARY KEY (customerID),
 	FOREIGN KEY (email) REFERENCES EmailPassword(email));
 
 CREATE TABLE ManagementEmployee_Manages (
