@@ -145,7 +145,11 @@
             executePlainSQL("SELECT R.roomNum, R.floor, R.status, CS.staffID, CS.firstName, CS.lastName
                                 FROM Room R, CleaningStaff_assignedBy CS
                                     WHERE R.staffID = CS.staffID AND R.status = " . $status . "");
-            OCICommit($db_conn);
+//             OCICommit($db_conn);
+//
+//             if (($row = oci_fetch_row($result)) != false) {
+//                 echo "<br> The required information is: " . $row[0] . "<br>";
+//             }
         }
 
 //         function handleResetRequest() {
