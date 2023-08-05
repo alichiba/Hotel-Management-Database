@@ -86,7 +86,7 @@ CREATE TABLE Views (
 CREATE TABLE Assignment (
 	staffID		INT,
 	typeName	CHAR(20)  NOT NULL,
-	PRIMARY KEY (staffID)
+	PRIMARY KEY (staffID),
 	FOREIGN KEY (staffID) REFERENCES  CleaningStaff_assignedBy(staffID),
 	FOREIGN KEY (typeName) REFERENCES RoomType(typeName));
 
