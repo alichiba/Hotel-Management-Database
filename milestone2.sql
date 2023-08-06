@@ -1,24 +1,28 @@
-﻿CREATE TABLE CitySeason (
+CREATE TABLE CitySeason (
 	city		CHAR(20),
 	peakSeason	CHAR(20),
-	PRIMARY KEY (city));
+	PRIMARY KEY (city)
+);
 
 CREATE TABLE HotelLocation (
  	hotelName		CHAR(20),
  	hotelAddress   	CHAR(30),
  	city			CHAR(20),
  	PRIMARY KEY (hotelName, hotelAddress),
- 	FOREIGN KEY (city) REFERENCES CitySeason(city));
+ 	FOREIGN KEY (city) REFERENCES CitySeason(city)
+);
 
 CREATE TABLE EmailPassword (
 	email		CHAR(30),
 	password	CHAR(30),
-	PRIMARY KEY (email));
+	PRIMARY KEY (email)
+);
 
 CREATE TABLE RoomType (
 	typeName	CHAR(20),
 	rate		INT,
-	PRIMARY KEY (typeName));
+	PRIMARY KEY (typeName)
+);
 
 CREATE TABLE Customer (
 	customerID	INT,
@@ -26,7 +30,8 @@ CREATE TABLE Customer (
 	lastName	CHAR(20),
 	email		CHAR(30),
 	PRIMARY KEY (customerID),
-	FOREIGN KEY (email) REFERENCES EmailPassword(email));
+	FOREIGN KEY (email) REFERENCES EmailPassword(email)
+);
 
 CREATE TABLE ManagementEmployee_Manages (
 	employeeID 		INT,
@@ -35,7 +40,8 @@ CREATE TABLE ManagementEmployee_Manages (
 	hotelName		CHAR(20),
 	hotelAddress	CHAR(30),
 	PRIMARY KEY (employeeID),
-	FOREIGN KEY (hotelName,hotelAddress) REFERENCES HotelLocation(hotelName, hotelAddress));
+	FOREIGN KEY (hotelName,hotelAddress) REFERENCES HotelLocation(hotelName, hotelAddress)
+);
 
 CREATE TABLE Reservation (
 	reservationID	INT,
@@ -46,17 +52,19 @@ CREATE TABLE Reservation (
 	hotelAddress	CHAR(30) NOT NULL,
 	typeName		CHAR(20) NOT NULL,
 	PRIMARY KEY (reservationID),
-	FOREIGN KEY (customerID) REFERENCES Customer,
+	FOREIGN KEY (customerID) REFERENCES Customer(customerID),
 	FOREIGN KEY (hotelName, hotelAddress) REFERENCES HotelLocation(hotelName, hotelAddress),
-	FOREIGN KEY (typeName) REFERENCES RoomType(typeName));
+	FOREIGN KEY (typeName) REFERENCES RoomType(typeName)
+);
 
 CREATE TABLE HotelCustomer (
 	customerID		INT,
 	hotelName		CHAR(20),
 	hotelAddress   	CHAR(30),
 	PRIMARY KEY (customerID, hotelName, hotelAddress),
-	FOREIGN KEY (customerID) REFERENCES Customer,
-	FOREIGN KEY (hotelName, hotelAddress) REFERENCES HotelLocation(hotelName, hotelAddress));
+	FOREIGN KEY (customerID) REFERENCES Customer(customerID),
+	FOREIGN KEY (hotelName, hotelAddress) REFERENCES HotelLocation(hotelName, hotelAddress)
+);
 
 CREATE TABLE CleaningStaff_assignedBy (
 	staffID 	INT,
@@ -64,7 +72,8 @@ CREATE TABLE CleaningStaff_assignedBy (
 	lastName	CHAR(20),
 	employeeID 	INT,
 	PRIMARY KEY (staffID),
-	FOREIGN KEY (employeeID) REFERENCES ManagementEmployee_Manages);
+	FOREIGN KEY (employeeID) REFERENCES ManagementEmployee_Manages(employeeID)
+);
 
 CREATE TABLE Billing_Has (
 	reservationID	INT,
@@ -73,25 +82,26 @@ CREATE TABLE Billing_Has (
 	billingAddress	CHAR(30),
 	PRIMARY KEY (creditCard, reservationID),
 	FOREIGN KEY (reservationID) REFERENCES Reservation(reservationID)
-	ON DELETE CASCADE
-	ON UPDATE CASCADE);
+);
 
 CREATE TABLE Views (
 	employeeID     	INT,
 	reservationID	INT,
 	PRIMARY KEY (reservationID, employeeID),
-	FOREIGN KEY (reservationID) REFERENCES Reservation,
-	FOREIGN KEY (employeeID) REFERENCES ManagementEmployee_Manages(employeeID));
+	FOREIGN KEY (reservationID) REFERENCES Reservation(reservationID),
+	FOREIGN KEY (employeeID) REFERENCES ManagementEmployee_Manages(employeeID)
+);
 
 CREATE TABLE Assignment (
 	staffID		INT,
-	typeName	CHAR(20)  NOT NULL,
+	typeName	CHAR(20) NOT NULL,
 	PRIMARY KEY (staffID),
-	FOREIGN KEY (staffID) REFERENCES  CleaningStaff_assignedBy(staffID),
-	FOREIGN KEY (typeName) REFERENCES RoomType(typeName));
+	FOREIGN KEY (staffID) REFERENCES CleaningStaff_assignedBy(staffID),
+	FOREIGN KEY (typeName) REFERENCES RoomType(typeName)
+);
 
 CREATE TABLE Room (
-	roomNum	INT,
+	roomNum	    CHAR(10),
 	floor		INT,
 	status		CHAR(20),
 	hotelName	CHAR(20),
@@ -99,37 +109,43 @@ CREATE TABLE Room (
 	staffID		INT,
 	PRIMARY KEY (roomNum, floor),
 	FOREIGN KEY (hotelName, hotelAddress) REFERENCES HotelLocation(hotelName, hotelAddress),
-	FOREIGN KEY (staffID) REFERENCES Assignment(staffID));
+	FOREIGN KEY (staffID) REFERENCES Assignment(staffID)
+);
 
 CREATE TABLE Standard (
 	typeName		CHAR(20),
 	viewDirection 	CHAR(20),
 	PRIMARY KEY (typeName),
-	FOREIGN KEY (typeName) REFERENCES RoomType);
+	FOREIGN KEY (typeName) REFERENCES RoomType(typeName)
+);
 
 CREATE TABLE Deluxe (
 	typeName		CHAR(20),
 	roomService 	CHAR(20),
 	PRIMARY KEY (typeName),
-	FOREIGN KEY (typeName) REFERENCES RoomType);
+	FOREIGN KEY (typeName) REFERENCES RoomType(typeName)
+);
 
 CREATE TABLE Suite (
 	typeName			CHAR(20),
 	privatePoolAccess	CHAR(20),
 	PRIMARY KEY (typeName),
-	FOREIGN KEY (typeName) REFERENCES RoomType);
+	FOREIGN KEY (typeName) REFERENCES RoomType(typeName)
+);
 
 CREATE TABLE Executive (
 	typeName			CHAR(20),
 	executiveAmenities	CHAR(20),
 	PRIMARY KEY (typeName),
-	FOREIGN KEY (typeName) REFERENCES RoomType);
+	FOREIGN KEY (typeName) REFERENCES RoomType(typeName)
+);
 
 CREATE TABLE Family (
 	typeName			CHAR(20) PRIMARY KEY,
 	numBedrooms 		INT,
 	numParkingSpaces 	INT,
-	FOREIGN KEY (typeName) REFERENCES RoomType);
+	FOREIGN KEY (typeName) REFERENCES RoomType(typeName)
+);
 
 INSERT INTO CitySeason (city, peakSeason) VALUES ('Vancouver', 'Summer ');
 INSERT INTO CitySeason (city, peakSeason) VALUES ('Cancun', 'Winter');
@@ -167,11 +183,11 @@ INSERT INTO ManagementEmployee_Manages (employeeID, firstName, lastName, hotelNa
 INSERT INTO ManagementEmployee_Manages (employeeID, firstName, lastName, hotelName, hotelAddress) VALUES ('4', 'Sarah', 'Davis', 'Hotel D', '444 Pine Ridge');
 INSERT INTO ManagementEmployee_Manages (employeeID, firstName, lastName, hotelName, hotelAddress) VALUES ('5', 'Robert', 'Brown', 'Hotel E', '555 Granville Avenue');
 
-INSERT INTO Reservation (reservationID, startDate, endDate, customerID, hotelName, hotelAddress, typeName) VALUES ('11', 'June 4, 2023', 'June 15, 2023', '111', 'Hotel A', '111 Main Street', 'Standard-Mountain');
-INSERT INTO Reservation (reservationID, startDate, endDate, customerID, hotelName, hotelAddress, typeName) VALUES ('22', 'June 29, 2023', 'July 3, 2023', '222', 'Hotel E', '555 Granville Avenue', 'Deluxe-Cleaning');
-INSERT INTO Reservation (reservationID, startDate, endDate, customerID, hotelName, hotelAddress, typeName) VALUES ('33', 'July 2, 2023', 'July 12, 2023', '333', 'Hotel D', '444 Pine Ridge', 'Suite-Infinity');
-INSERT INTO Reservation (reservationID, startDate, endDate, customerID, hotelName, hotelAddress, typeName) VALUES ('44', 'August 16, 2023', 'August 23, 2023', '444', 'Hotel B', '222 Maple Avenue', 'Executive-Jacuzzi ');
-INSERT INTO Reservation (reservationID, startDate, endDate, customerID, hotelName, hotelAddress, typeName) VALUES ('55', 'September 19, 2023', 'September 21, 2023', '555', 'Hotel C', '333 Oak Lane', 'Family-Couple');
+INSERT INTO Reservation (reservationID, startDate, endDate, customerID, hotelName, hotelAddress, typeName) VALUES ('11', TO_DATE('2023-06-04','YYYY-MM-DD'), TO_DATE('2023-06-15','YYYY-MM-DD'), '111', 'Hotel A', '111 Main Street', 'Standard-Mountain');
+INSERT INTO Reservation (reservationID, startDate, endDate, customerID, hotelName, hotelAddress, typeName) VALUES ('22', TO_DATE('2023-06-29','YYYY-MM-DD'), TO_DATE('2023-07-03','YYYY-MM-DD'), '222', 'Hotel E', '555 Granville Avenue', 'Deluxe-Cleaning');
+INSERT INTO Reservation (reservationID, startDate, endDate, customerID, hotelName, hotelAddress, typeName) VALUES ('33', TO_DATE('2023-07-02','YYYY-MM-DD'), TO_DATE('2023-07-12','YYYY-MM-DD'), '333', 'Hotel D', '444 Pine Ridge', 'Suite-Infinity');
+INSERT INTO Reservation (reservationID, startDate, endDate, customerID, hotelName, hotelAddress, typeName) VALUES ('44', TO_DATE('2023-08-02','YYYY-MM-DD'), TO_DATE('2023-08-06','YYYY-MM-DD'), '444', 'Hotel B', '222 Maple Avenue', 'Executive-Jacuzzi');
+INSERT INTO Reservation (reservationID, startDate, endDate, customerID, hotelName, hotelAddress, typeName) VALUES ('55', TO_DATE('2023-09-12','YYYY-MM-DD'), TO_DATE('2023-09-20','YYYY-MM-DD'), '555', 'Hotel C', '333 Oak Lane', 'Family-Couple');
 
 INSERT INTO HotelCustomer (customerID, hotelName, hotelAddress) VALUES ('111', 'Hotel A', '111 Main Street');
 INSERT INTO HotelCustomer (customerID, hotelName, hotelAddress) VALUES ('222', 'Hotel B', '222 Maple Avenue');
@@ -203,38 +219,38 @@ INSERT INTO Assignment (staffID, typeName) VALUES ('3333', 'Suite-Infinity');
 INSERT INTO Assignment (staffID, typeName) VALUES ('4444', 'Executive-Jacuzzi');
 INSERT INTO Assignment (staffID, typeName) VALUES ('5555', 'Family-Couple');
 
-INSERT INTO Room (roomNum, floor, status, hotelName, hotelAddress, staffID) VALUES ('12', '5', 'Available', 'Hotel A', '111 Main Street', '1111');
-INSERT INTO Room (roomNum, floor, status, hotelName, hotelAddress, staffID) VALUES ('15', '8', 'Pending Cleaning', 'Hotel B', '222 Maple Avenue', '2222');
-INSERT INTO Room (roomNum, floor, status, hotelName, hotelAddress, staffID) VALUES ('4', '15', 'Booked', 'Hotel C', '333 Oak Lane', '3333');
-INSERT INTO Room (roomNum, floor, status, hotelName, hotelAddress, staffID) VALUES ('10', '22', 'Available', 'Hotel D', '444 Pine Ridge', '4444');
-INSERT INTO Room (roomNum, floor, status, hotelName, hotelAddress, staffID) VALUES ('3', '4', 'Booked', 'Hotel E', '555 Granville Avenue', '5555');
+INSERT INTO Room (roomNum, floor, status, hotelName, hotelAddress, staffID) VALUES ('a12', '5', 'Available', 'Hotel A', '111 Main Street', '1111');
+INSERT INTO Room (roomNum, floor, status, hotelName, hotelAddress, staffID) VALUES ('b15', '8', 'Pending Cleaning', 'Hotel B', '222 Maple Avenue', '2222');
+INSERT INTO Room (roomNum, floor, status, hotelName, hotelAddress, staffID) VALUES ('c4', '15', 'Booked', 'Hotel C', '333 Oak Lane', '3333');
+INSERT INTO Room (roomNum, floor, status, hotelName, hotelAddress, staffID) VALUES ('d10', '22', 'Available', 'Hotel D', '444 Pine Ridge', '4444');
+INSERT INTO Room (roomNum, floor, status, hotelName, hotelAddress, staffID) VALUES ('e3', '4', 'Booked', 'Hotel E', '555 Granville Avenue', '5555');
 
 -- INSERT INTO Standard (typeName, viewDirection) VALUES ('Standard-Mountain', 'North');
 -- INSERT INTO Standard (typeName, viewDirection) VALUES ('Standard-East', 'East');
 -- INSERT INTO Standard (typeName, viewDirection) VALUES ('Standard-Ocean', 'South');
 -- INSERT INTO Standard (typeName, viewDirection) VALUES ('Standard-Pool', 'South');
 -- INSERT INTO Standard (typeName, viewDirection) VALUES ('Standard-West', 'West');
---
+
 -- INSERT INTO Deluxe (typeName, roomService) VALUES ('Deluxe-Basic', 'Food and Beverage');
 -- INSERT INTO Deluxe (typeName, roomService) VALUES ('Deluxe-Cleaning', 'Housekeeping');
 -- INSERT INTO Deluxe (typeName, roomService) VALUES ('Deluxe-Gourmet', 'Food and Beverage');
 -- INSERT INTO Deluxe (typeName, roomService) VALUES ('Deluxe-DryClean', 'Laundry/Dry Cleaning');
 -- INSERT INTO Deluxe (typeName, roomService) VALUES ('Deluxe-Spa', 'In-Room Spa');
---
+
 -- INSERT INTO Suite (typeName, privatePool) VALUES ('Suite-Terrace', 'Pool Terrace');
 -- INSERT INTO Suite (typeName, privatePool) VALUES ('Suite-Cabana', 'Pool Cabana');
 -- INSERT INTO Suite (typeName, privatePool) VALUES ('Suite-Plunge', 'Plunge Pool');
 -- INSERT INTO Suite (typeName, privatePool) VALUES ('Suite-Courtyard', 'Pool Courtyard');
 -- INSERT INTO Suite (typeName, privatePool) VALUES ('Suite-Infinity', 'Infinity Pool');
---
+
 -- INSERT INTO Executive (typeName, executiveAmenities) VALUES ('Executive-Jacuzzi', 'Jacuzzi');
 -- INSERT INTO Executive (typeName, executiveAmenities) VALUES ('Executive-Butler', 'Butler Service');
 -- INSERT INTO Executive (typeName, executiveAmenities) VALUES ('Executive-Chauffeur', 'Private Chauffeur');
 -- INSERT INTO Executive (typeName, executiveAmenities) VALUES ('Executive-Balcony', 'Private Balcony');
 -- INSERT INTO Executive (typeName, executiveAmenities) VALUES ('Executive-Valet', 'Valet Parking');
 
---INSERT INTO Family (typeName, rate, numBedrooms, numParkingSpaces) VALUES ('Family-Hut', '260', '2', '1');
---INSERT INTO Family (typeName, rate, numBedrooms, numParkingSpaces) VALUES ('Family-Cabin', '310', '2', '2');
---INSERT INTO Family (typeName, rate, numBedrooms, numParkingSpaces) VALUES ('Family-Caravan', '250', '2', '3');
---INSERT INTO Family (typeName, rate, numBedrooms, numParkingSpaces) VALUES ('Family-Couple', '195', '1', '1');
---INSERT INTO Family (typeName, rate, numBedrooms, numParkingSpaces) VALUES ('Family-Extended', '370', '3', '2');
+-- INSERT INTO Family (typeName, rate, numBedrooms, numParkingSpaces) VALUES ('Family-Hut', '260', '2', '1');
+-- INSERT INTO Family (typeName, rate, numBedrooms, numParkingSpaces) VALUES ('Family-Cabin', '310', '2', '2');
+-- INSERT INTO Family (typeName, rate, numBedrooms, numParkingSpaces) VALUES ('Family-Caravan', '250', '2', '3');
+-- INSERT INTO Family (typeName, rate, numBedrooms, numParkingSpaces) VALUES ('Family-Couple', '195', '1', '1');
+-- INSERT INTO Family (typeName, rate, numBedrooms, numParkingSpaces) VALUES ('Family-Extended', '370', '3', '2');
