@@ -28,6 +28,15 @@
 
         <a href="index.php"><button type="button">Back</button></a>
 
+        <h2>Aggregation with Having Query</h2>
+        <p>Find employees who manage more than 3 cleaning staff</p>
+        <form method="GET" action="management.php"> <!--refresh page when submitted-->
+              <input type="hidden" id="countStaffRequest" name="countStaffRequest">
+              <input type="submit" name="countStaff"></p>
+        </form>
+
+        <a href="index.php"><button type="button">Back</button></a>
+
         <?php
         $success = True; //keep track of errors so it redirects the page only if there are no errors
         $db_conn = NULL; // edit the login credentials in connectToDB()
@@ -102,7 +111,7 @@
         }
 
         function printResult($result) { //prints results from a select statement
-            echo "<br>Retrieved data from table demoTable:<br>";
+            echo "<br>Retrieved data from table:<br>";
             echo "<table>";
             echo "<tr><th>ID</th><th>Name</th></tr>";
 
@@ -116,7 +125,7 @@
         function connectToDB() {
             global $db_conn;
 
-            $db_conn = OCILogon("ora_ubcavi", "a21728944", "dbhost.students.cs.ubc.ca:1522/stu");
+            $db_conn = OCILogon("ora_alisonh2", "a89783757", "dbhost.students.cs.ubc.ca:1522/stu");
 
             if ($db_conn) {
                 debugAlertMessage("Database is Connected");
@@ -145,11 +154,7 @@
             executePlainSQL("SELECT R.roomNum, R.floor, R.status, CS.staffID, CS.firstName, CS.lastName
                                 FROM Room R, CleaningStaff_assignedBy CS
                                     WHERE R.staffID = CS.staffID AND R.status = " . $status . "");
-//             OCICommit($db_conn);
-//
-//             if (($row = oci_fetch_row($result)) != false) {
-//                 echo "<br> The required information is: " . $row[0] . "<br>";
-//             }
+            OCICommit($db_conn);
         }
 
 //         function handleResetRequest() {
@@ -192,6 +197,22 @@
             }
         }
 
+        // Aggregation with Having Query (count employees with over 3 staff)
+        function handleCountStaffRequest() {
+            global $db_conn;
+
+            $result = executePlainSQL("SELECT employeeID, COUNT(*) AS numStaff
+            FROM CleaningStaff_assignedBy
+            GROUP BY employeeID
+            HAVING COUNT(*) > 3");
+
+            if (($row = oci_fetch_row($result)) != false) {
+                echo "<br> The number of available rooms are: " . $row[0] . "<br>";
+            }
+
+        }
+
+
         // HANDLE ALL POST ROUTES
             // A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
         function handlePOSTRequest() {
@@ -211,6 +232,9 @@
                 if (array_key_exists('countCustomers', $_GET)) {
                     handleCountRequest();
                 }
+                if (array_key_exists('countStaff', $_GET)) {
+                    handleCountStaffRequest();
+                }
 
                 disconnectFromDB();
            }
@@ -225,4 +249,3 @@
 
 	</body>
 </html>
-
