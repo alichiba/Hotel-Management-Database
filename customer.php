@@ -1,3 +1,4 @@
+
 <html>
     <head>
         <title>Hotel Customer</title>
@@ -99,19 +100,21 @@
                 echo "</table>";
             }
 
-        function connectToDB() {
-            global $db_conn;
-
-            $db_conn = OCILogon("ora_ubcavi", "a21728944", "dbhost.students.cs.ubc.ca:1522/stu");
-
-            if ($db_conn) {
-                debugAlertMessage("Database is Connected");
-                return true;
-            } else {
-                debugAlertMessage("Cannot connect to Database");
-                $e = OCI_Error(); // For OCILogon errors pass no handle
-                echo htmlentities($e['message']);
-                return false;
+            function connectToDB() {
+                global $db_conn;
+    
+                // Your username is ora_(CWL_ID) and the password is a(student number). For example,
+                // ora_platypus is the username and a12345678 is the password.
+                $db_conn = OCILogon("ora_alisonh2", "a89783757", "dbhost.students.cs.ubc.ca:1522/stu");
+    
+                if ($db_conn) {
+                    debugAlertMessage("Database is Connected");
+                    return true;
+                } else {
+                    debugAlertMessage("Cannot connect to Database");
+                    $e = OCI_Error(); // For OCILogon errors pass no handle
+                    echo htmlentities($e['message']);
+                    return false;
                 }
             }
 
@@ -142,7 +145,7 @@
 //             echo "<br> creating new table <br>";
 //             executePlainSQL("CREATE TABLE demoTable (id int PRIMARY KEY, name char(30))");
 //             OCICommit($db_conn);
-//        }
+//           }        
 
 //         function handleInsertRequest() {
 //             global $db_conn;
