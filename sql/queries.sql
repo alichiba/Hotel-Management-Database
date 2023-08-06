@@ -18,3 +18,36 @@ SELECT R.hotelName, COUNT(*) AS numOfCustomers
     FROM Reservation R
     GROUP BY R.hotelName
     ORDER BY numOfCustomers ASC;
+    
+    
+-- ALISON QUERIES ------------------------------------------------------------------------------------------------------------------------------
+ 
+-- Aggregation with Having
+-- find employees who manage more than 3 cleaning staff
+SELECT employeeID, COUNT(*) AS numStaff
+FROM CleaningStaff_assignedBy
+GROUP BY employeeID
+HAVING COUNT(*) > 3;
+
+
+-- Nested Aggregation with Group By
+-- number of rooms on each floor at hotels above the average floor level (across all hotels)
+SELECT R.floor, R.hotelName, R.hotelAddress, COUNT(*) as numHigh
+FROM Room R
+GROUP BY R.floor, R.hotelName, R.hotelAddress
+HAVING R.floor > (SELECT AVG(R2.floor)
+FROM Room R2);
+
+
+-- Division
+-- find customers who have visited all hotels
+-- HotelCustomer / Hotel  -> join with customer to get customer ID, first and lase name
+SELECT C.customerID, C.firstName, C.lastName
+FROM Customer C
+WHERE NOT EXISTS
+((SELECT H.hotelName, H.hotelAddress
+FROM HotelLocation H)
+EXCEPT
+(SELECT X.hotelName, X.hotelAddress
+FROM HotelCustomer X
+WHERE X.customerID = C.customerID));
