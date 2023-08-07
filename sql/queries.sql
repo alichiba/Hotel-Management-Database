@@ -51,3 +51,14 @@ EXCEPT
 (SELECT X.hotelName, X.hotelAddress
 FROM HotelCustomer X
 WHERE X.customerID = C.customerID));
+
+-- ORACLE NEEDS MINUS INSTEAD OF EXCEPT
+SELECT C.customerID, C.firstName, C.lastName
+            FROM Customer C
+            WHERE NOT EXISTS
+            ((SELECT H.hotelName, H.hotelAddress
+            FROM HotelLocation H)
+            MINUS
+            (SELECT X.hotelName, X.hotelAddress
+            FROM HotelCustomer X
+            WHERE X.customerID = C.customerID));
