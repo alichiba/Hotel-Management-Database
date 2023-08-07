@@ -7,10 +7,18 @@
     <body>
         <h1>Customer</h1>
 
-        <h2>Finding the hotel with rooms available</h2>
+        <h2>Projection Query</h2>
+        <p>Finding the hotel with rooms available</p>
         <form method="GET" action="customer.php"> <!--refresh page when submitted-->
               <input type="hidden" id="countRoomRequest" name="countRoomRequest">
               <input type="submit" name="countRooms"></p>
+        </form>
+
+        <h2>Nested Aggregation Query</h2>
+        <p>Finding number of rooms on each floor at hotels above the average floor level (across all hotels)</p>
+        <form method="GET" action="customer.php"> <!--refresh page when submitted-->
+              <input type="hidden" id="highRoomsRequest" name="highRoomsRequest">
+              <input type="submit" name="highRooms"></p>
         </form>
 
         <a href="index.php"><button type="button">Back</button></a>
@@ -89,18 +97,18 @@
         }
 
         function printResult($result) { //prints results from a select statement
-            echo "<br>Retrieved data from table demoTable:<br>";
+            echo "<br>Retrieved data from table:<br>";
             echo "<table>";
-            echo "<tr><th>ID</th><th>Name</th></tr>";
+            echo "<tr><th>Column 1</th><th>Column 2</th></tr>";
 
-            while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
-                echo "<tr><td>" . $row["ID"] . "</td><td>" . $row["NAME"] . "</td></tr>"; //or just use "echo $row[0]"
+            while (($row = OCI_Fetch_Array($result, OCI_BOTH)) != false) {
+                echo "<tr><td>" . $row[0] . "</td><td>" . $row[1] . "</td></tr>"; //or just use "echo $row[0]"
             }
 
-                echo "</table>";
-            }
+            echo "</table>";
+        }
 
-            function connectToDB() {
+        function connectToDB() {
                 global $db_conn;
     
                 // Your username is ora_(CWL_ID) and the password is a(student number). For example,
@@ -116,13 +124,92 @@
                     echo htmlentities($e['message']);
                     return false;
                 }
-            }
+        }
 
         function disconnectFromDB() {
             global $db_conn;
 
             debugAlertMessage("Disconnect from Database");
             OCILogoff($db_conn);
+        }
+
+        // PROJECTION Query - find hotels with rooms available
+        function handleCountRequest() {
+            global $db_conn;
+
+            $result = executePlainSQL("SELECT roomNum, floor, status, hotelName, hotelAddress FROM Room WHERE status = 'Available'");
+
+            // if (($row = oci_fetch_row($result)) != false) {
+            //     echo "<br> The number of available rooms are: " . $row[0] . "<br>";
+            // }
+
+            echo "<br>Retrieved data from Room:<br>";
+            echo "<table>";
+            echo "<tr><th>Room Num</th><th>Floor</th><th>Status</th><th>Hotel Name</th><th>Hotel Address</th></tr>";
+            while (($row = OCI_Fetch_Array($result, OCI_BOTH)) != false) {
+                echo "<tr><td>" . $row[0] . "</td><td>" . $row[1] . "</td><td>" . $row[2] . "</td><td>" . $row[3] . "</td><td>" . $row[4] . "</td></tr>"; //or just use "echo $row[0]"
+            }
+            echo "</table>";
+        }
+
+        // Nested Aggregation Query - find number of rooms on higher floors in a hotel compared to overall average floor
+        function handleHighRoomsRequest() {
+            global $db_conn;
+
+            $result = executePlainSQL("SELECT R.floor, R.hotelName, R.hotelAddress, COUNT(*) as numHigh
+            FROM Room R
+            GROUP BY R.floor, R.hotelName, R.hotelAddress
+            HAVING R.floor > (SELECT AVG(R2.floor)
+            FROM Room R2)");
+
+            // if (($row = oci_fetch_row($result)) != false) {
+            //     echo "<br> The number of available rooms are: " . $row[0] . "<br>";
+            // }
+
+            echo "<br>Retrieved data from Room:<br>";
+            echo "<table>";
+            echo "<tr><th>Floor</th><th>Hotel Name</th><th>Hotel Address</th><th>numHigh</th></tr>";
+            while (($row = OCI_Fetch_Array($result, OCI_BOTH)) != false) {
+                echo "<tr><td>" . $row[0] . "</td><td>" . $row[1] . "</td><td>" . $row[2] . "</td><td>" . $row[3] . "</td></tr>"; //or just use "echo $row[0]"
+            }
+            echo "</table>";
+        }
+
+        // HANDLE ALL POST ROUTES
+     	    // A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
+        function handlePOSTRequest() {
+            if (connectToDB()) {
+                if (array_key_exists('resetTablesRequest', $_POST)) {
+                    handleResetRequest();
+                } else if (array_key_exists('updateQueryRequest', $_POST)) {
+                    handleUpdateRequest();
+                } else if (array_key_exists('insertQueryRequest', $_POST)) {
+                    handleInsertRequest();
+                }
+
+                disconnectFromDB();
+            }
+        }
+
+        // HANDLE ALL GET ROUTES
+        	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
+        function handleGETRequest() {
+            if (connectToDB()) {
+                if (array_key_exists('countRooms', $_GET)) {
+                    handleCountRequest();
+                }
+                if (array_key_exists('highRooms', $_GET)) {
+                    handleHighRoomsRequest();
+                }
+
+                disconnectFromDB();
+           }
+        }
+
+        if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit'])) {
+            handlePOSTRequest();
+        } else if (isset($_GET['countRoomRequest']) || isset($_GET['highRoomsRequest'])) {
+             handleGETRequest();
         }
 
 //         function handleUpdateRequest() {
@@ -164,50 +251,6 @@
 //             OCICommit($db_conn);
 //         }
 
-        // PROJECTION Query
-        function handleCountRequest() {
-            global $db_conn;
-
-            $result = executePlainSQL("SELECT roomNum, floor, status, hotelName, hotelAddress FROM Room WHERE status = 'Available'");
-
-            if (($row = oci_fetch_row($result)) != false) {
-                echo "<br> The number of available rooms are: " . $row[0] . "<br>";
-            }
-        }
-
-        // HANDLE ALL POST ROUTES
-     	    // A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
-        function handlePOSTRequest() {
-            if (connectToDB()) {
-                if (array_key_exists('resetTablesRequest', $_POST)) {
-                    handleResetRequest();
-                } else if (array_key_exists('updateQueryRequest', $_POST)) {
-                    handleUpdateRequest();
-                } else if (array_key_exists('insertQueryRequest', $_POST)) {
-                    handleInsertRequest();
-                }
-
-                disconnectFromDB();
-            }
-        }
-
-        // HANDLE ALL GET ROUTES
-        	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
-        function handleGETRequest() {
-            if (connectToDB()) {
-                if (array_key_exists('countRooms', $_GET)) {
-                    handleCountRequest();
-                }
-
-                disconnectFromDB();
-           }
-        }
-
-        if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit'])) {
-            handlePOSTRequest();
-        } else if (isset($_GET['countRoomRequest'])) {
-             handleGETRequest();
-        }
       	?>
 
 	</body>
