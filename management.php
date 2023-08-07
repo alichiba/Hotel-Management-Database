@@ -26,13 +26,18 @@
               <input type="submit" name="countCustomers"></p>
         </form>
 
-        <a href="index.php"><button type="button">Back</button></a>
-
         <h2>Aggregation with Having Query</h2>
         <p>Find employees who manage more than 3 cleaning staff</p>
         <form method="GET" action="management.php"> <!--refresh page when submitted-->
               <input type="hidden" id="countStaffRequest" name="countStaffRequest">
               <input type="submit" name="countStaff"></p>
+        </form>
+
+        <h2>Division</h2>
+        <p>Find customers who have visited all hotels</p>
+        <form method="GET" action="management.php"> <!--refresh page when submitted-->
+              <input type="hidden" id="loyalCustomerRequest" name="loyalCustomerRequest">
+              <input type="submit" name="loyalCustomer"></p>
         </form>
 
         <a href="index.php"><button type="button">Back</button></a>
@@ -113,14 +118,14 @@
         function printResult($result) { //prints results from a select statement
             echo "<br>Retrieved data from table:<br>";
             echo "<table>";
-            echo "<tr><th>ID</th><th>Name</th></tr>";
+            echo "<tr><th>Column 1</th><th>Column 2</th></tr>";
 
-            while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
-                echo "<tr><td>" . $row["ID"] . "</td><td>" . $row["NAME"] . "</td></tr>"; //or just use "echo $row[0]"
+            while (($row = OCI_Fetch_Array($result, OCI_BOTH)) != false) {
+                echo "<tr><td>" . $row[0] . "</td><td>" . $row[1] . "</td></tr>"; //or just use "echo $row[0]"
             }
 
-                echo "</table>";
-            }
+            echo "</table>";
+        }
 
         function connectToDB() {
             global $db_conn;
@@ -145,6 +150,8 @@
             OCILogoff($db_conn);
         }
 
+
+        // JOIN Query - select staff based off status
         function handleJoinRequest() {
             global $db_conn;
 
@@ -155,6 +162,110 @@
                                 FROM Room R, CleaningStaff_assignedBy CS
                                     WHERE R.staffID = CS.staffID AND R.status = " . $status . "");
             OCICommit($db_conn);
+        }
+
+        // PROJECTION Query - Aggregation with Group By (number of customers per hotel)
+        function handleCountRequest() {
+            global $db_conn;
+
+            $result = executePlainSQL("SELECT R.hotelName, COUNT(*) AS numOfCustomers FROM Reservation R
+                                       GROUP BY R.hotelName ORDER BY numOfCustomers ASC");
+
+            // while (($row = oci_fetch_row($result)) != false) {
+            //     echo "<br> The number of customers at " . $row[0] . "is" . $row[1] . "<br>";
+            // }
+            echo "<br>Retrieved data from Reservation:<br>";
+            echo "<table>";
+            echo "<tr><th>Hotel Name</th><th>numOfCustomers</th></tr>";
+            while (($row = OCI_Fetch_Array($result, OCI_BOTH)) != false) {
+                echo "<tr><td>" . $row[0] . "</td><td>" . $row[1] . "</td></tr>"; //or just use "echo $row[0]"
+            }
+            echo "</table>";
+
+        }
+
+        // Aggregation with Having Query (count employees with over 3 staff)
+        function handleCountStaffRequest() {
+            global $db_conn;
+
+            $result = executePlainSQL("SELECT employeeID, COUNT(*) AS numStaff
+            FROM CleaningStaff_assignedBy
+            GROUP BY employeeID
+            HAVING COUNT(*) > 3");
+
+            // while (($row = oci_fetch_row($result)) != false) {
+            //     echo "<br>" . $row[0] . "has" . $row[1] . " staff <br>";
+            // }
+
+            echo "<br>Retrieved data from CleaningStaff_assignedBy:<br>";
+            echo "<table>";
+            echo "<tr><th>EmployeeID</th><th>numStaff</th></tr>";
+            while (($row = OCI_Fetch_Array($result, OCI_BOTH)) != false) {
+                echo "<tr><td>" . $row[0] . "</td><td>" . $row[1] . "</td></tr>"; //or just use "echo $row[0]"
+            }
+            echo "</table>";
+
+        }
+
+        // DIVISION QUERY (find customers who have visited all hotels)
+        function handleLoyalCustomerRequest() {
+            global $db_conn;
+
+            $result = executePlainSQL("SELECT C.customerID, C.firstName, C.lastName
+            FROM Customer C
+            WHERE NOT EXISTS
+            ((SELECT H.hotelName, H.hotelAddress
+            FROM HotelLocation H)
+            MINUS
+            (SELECT X.hotelName, X.hotelAddress
+            FROM HotelCustomer X
+            WHERE X.customerID = C.customerID))");
+
+            echo "<br>Retrieved data from Customer:<br>";
+            echo "<table>";
+            echo "<tr><th>CustomerID</th><th>First Name</th><th>Last Name</th></tr>";
+            while (($row = OCI_Fetch_Array($result, OCI_BOTH)) != false) {
+                echo "<tr><td>" . $row[0] . "</td><td>" . $row[1] . "</td><td>" . $row[2] . "</td></tr>"; //or just use "echo $row[0]"
+            }
+            echo "</table>";
+
+        }
+
+
+        // HANDLE ALL POST ROUTES
+            // A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
+        function handlePOSTRequest() {
+            if (connectToDB()) {
+                if (array_key_exists('joinQueryRequest', $_POST)) {
+                    handleJoinRequest();
+                }
+
+                disconnectFromDB();
+            }
+        }
+
+        // HANDLE ALL GET ROUTES
+            // A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
+        function handleGETRequest() {
+            if (connectToDB()) {
+                if (array_key_exists('countCustomers', $_GET)) {
+                    handleCountRequest();
+                }
+                if (array_key_exists('countStaff', $_GET)) {
+                    handleCountStaffRequest();
+                }
+                if (array_key_exists('loyalCustomer', $_GET)) {
+                    handleLoyalCustomerRequest();
+                }
+
+                disconnectFromDB();
+           }
+        }
+
+        if (isset($_POST['joinSubmit'])){
+            handlePOSTRequest();
+        } else if (isset($_GET['countCustomerRequest']) || isset($_GET['countStaffRequest']) || isset($_GET['loyalCustomerRequest'])) {
+             handleGETRequest();
         }
 
 //         function handleResetRequest() {
@@ -185,67 +296,9 @@
 //             OCICommit($db_conn);
 //         }
 
-        // PROJECTION Query
-        function handleCountRequest() {
-            global $db_conn;
-
-            $result = executePlainSQL("SELECT R.hotelName, COUNT(*) AS numOfCustomers FROM Reservation R
-                                       GROUP BY R.hotelName ORDER BY numOfCustomers ASC");
-
-            if (($row = oci_fetch_row($result)) != false) {
-                echo "<br> The number of available rooms are: " . $row[0] . "<br>";
-            }
-        }
-
-        // Aggregation with Having Query (count employees with over 3 staff)
-        function handleCountStaffRequest() {
-            global $db_conn;
-
-            $result = executePlainSQL("SELECT employeeID, COUNT(*) AS numStaff
-            FROM CleaningStaff_assignedBy
-            GROUP BY employeeID
-            HAVING COUNT(*) > 3");
-
-            if (($row = oci_fetch_row($result)) != false) {
-                echo "<br> The number of available rooms are: " . $row[0] . "<br>";
-            }
-
-        }
-
-
-        // HANDLE ALL POST ROUTES
-            // A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
-        function handlePOSTRequest() {
-            if (connectToDB()) {
-                if (array_key_exists('joinQueryRequest', $_POST)) {
-                    handleJoinRequest();
-                }
-
-                disconnectFromDB();
-            }
-        }
-
-        // HANDLE ALL GET ROUTES
-            // A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
-        function handleGETRequest() {
-            if (connectToDB()) {
-                if (array_key_exists('countCustomers', $_GET)) {
-                    handleCountRequest();
-                }
-                if (array_key_exists('countStaff', $_GET)) {
-                    handleCountStaffRequest();
-                }
-
-                disconnectFromDB();
-           }
-        }
-
-        if (isset($_POST['joinSubmit'])){
-            handlePOSTRequest();
-        } else if (isset($_GET['countCustomerRequest'])) {
-             handleGETRequest();
-        }
         ?>
 
 	</body>
 </html>
+
+
