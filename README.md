@@ -1,5 +1,7 @@
 # Hotel Booking and Management System
 
+https://www.students.cs.ubc.ca/~alisonh2/index.php
+
 ## Description:
 
 Our main perspective focuses on the administrative view of a hotel, although a customer view is also integrated with this. Customers will have specific information associated with their account such as a unique customer ID, name, and email, and should be standard between customers. Each room will be uniquely identified by their room number and floor, and will also have a status of available, booked, or pending cleaning. Room types will be modeled using an ISA hierarchy, where rooms will be one of the following: standard, deluxe, suite, executive, or family, each of which have different attributes. Reservations are uniquely identified with a reservation ID and will be associated with only one customer. Reservations also include information about the dates and hotel booked. Billing is a weak entity that is dependent on Reservation. Each billing contains credit card information and additional information about the name and address associated with the billing.
