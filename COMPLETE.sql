@@ -166,10 +166,30 @@ INSERT INTO EmailPassword (email, password) VALUES ('isabella.martinez@gmail.com
 INSERT INTO EmailPassword (email, password) VALUES ('oliver.scott@gmail.com', 'securepass123');
 
 INSERT INTO RoomType (typeName, rate) VALUES ('Standard-Mountain', '60');
+INSERT INTO RoomType (typeName, rate) VALUES ('Standard-East', '60');
+INSERT INTO RoomType (typeName, rate) VALUES ('Standard-Ocean', '60');
+INSERT INTO RoomType (typeName, rate) VALUES ('Standard-Pool', '60');
+INSERT INTO RoomType (typeName, rate) VALUES ('Standard-West', '60');
+INSERT INTO RoomType (typeName, rate) VALUES ('Deluxe-Basic', '120');
 INSERT INTO RoomType (typeName, rate) VALUES ('Deluxe-Cleaning', '120');
+INSERT INTO RoomType (typeName, rate) VALUES ('Deluxe-Gourmet', '120');
+INSERT INTO RoomType (typeName, rate) VALUES ('Deluxe-DryClean', '120');
+INSERT INTO RoomType (typeName, rate) VALUES ('Deluxe-Spa', '120');
+INSERT INTO RoomType (typeName, rate) VALUES ('Suite-Terrace', '250');
+INSERT INTO RoomType (typeName, rate) VALUES ('Suite-Cabana', '250');
+INSERT INTO RoomType (typeName, rate) VALUES ('Suite-Plunge', '250');
+INSERT INTO RoomType (typeName, rate) VALUES ('Suite-Courtyard', '250');
 INSERT INTO RoomType (typeName, rate) VALUES ('Suite-Infinity', '250');
 INSERT INTO RoomType (typeName, rate) VALUES ('Executive-Jacuzzi', '400');
+INSERT INTO RoomType (typeName, rate) VALUES ('Executive-Butler', '400');
+INSERT INTO RoomType (typeName, rate) VALUES ('Executive-Chauffeur', '400');
+INSERT INTO RoomType (typeName, rate) VALUES ('Executive-Balcony', '400');
+INSERT INTO RoomType (typeName, rate) VALUES ('Executive-Valet', '400');
+INSERT INTO RoomType (typeName, rate) VALUES ('Family-Hut', '310');
+INSERT INTO RoomType (typeName, rate) VALUES ('Family-Cabin', '310');
+INSERT INTO RoomType (typeName, rate) VALUES ('Family-Caravan', '310');
 INSERT INTO RoomType (typeName, rate) VALUES ('Family-Couple', '310');
+INSERT INTO RoomType (typeName, rate) VALUES ('Family-Extended', '310');
 
 INSERT INTO Customer (customerID, firstName, lastName, email) VALUES ('111', 'Ethan', 'Anderson', 'ethan.anderson@gmail.com');
 INSERT INTO Customer (customerID, firstName, lastName, email) VALUES ('222', 'Ava', 'Mitchell', 'ava.mitchell@gmail.com');
@@ -194,12 +214,19 @@ INSERT INTO HotelCustomer (customerID, hotelName, hotelAddress) VALUES ('222', '
 INSERT INTO HotelCustomer (customerID, hotelName, hotelAddress) VALUES ('333', 'Hotel C', '333 Oak Lane');
 INSERT INTO HotelCustomer (customerID, hotelName, hotelAddress) VALUES ('444', 'Hotel D', '444 Pine Ridge');
 INSERT INTO HotelCustomer (customerID, hotelName, hotelAddress) VALUES ('555', 'Hotel E', '555 Granville Avenue');
+INSERT INTO HotelCustomer (customerID, hotelName, hotelAddress) VALUES ('111', 'Hotel B', '222 Maple Avenue');
+INSERT INTO HotelCustomer (customerID, hotelName, hotelAddress) VALUES ('111', 'Hotel C', '333 Oak Lane');
+INSERT INTO HotelCustomer (customerID, hotelName, hotelAddress) VALUES ('111', 'Hotel D', '444 Pine Ridge');
+INSERT INTO HotelCustomer (customerID, hotelName, hotelAddress) VALUES ('111', 'Hotel E', '555 Granville Avenue');
 
 INSERT INTO CleaningStaff_assignedBy (staffID, firstName, lastName, employeeID) VALUES ('1111', 'Lucas', 'Clark', '1');
 INSERT INTO CleaningStaff_assignedBy (staffID, firstName, lastName, employeeID) VALUES ('2222', 'Chloe', 'Lopez', '2');
 INSERT INTO CleaningStaff_assignedBy (staffID, firstName, lastName, employeeID) VALUES ('3333', 'Grace', 'Lee', '3');
 INSERT INTO CleaningStaff_assignedBy (staffID, firstName, lastName, employeeID) VALUES ('4444', 'Eric', 'Wright', '4');
 INSERT INTO CleaningStaff_assignedBy (staffID, firstName, lastName, employeeID) VALUES ('5555', 'Noah', 'Cook', '5');
+INSERT INTO CleaningStaff_assignedBy (staffID, firstName, lastName, employeeID) VALUES ('1112', 'Mark', 'Smith', '1');
+INSERT INTO CleaningStaff_assignedBy (staffID, firstName, lastName, employeeID) VALUES ('1113', 'Mary', 'Xu', '1');
+INSERT INTO CleaningStaff_assignedBy (staffID, firstName, lastName, employeeID) VALUES ('1114', 'Skip', 'Bo', '1');
 
 INSERT INTO Billing_Has (reservationID, creditCard, billingName, billingAddress) VALUES ('11', '1049284938601918', 'Alice Johnson ', '432 Elm Street');
 INSERT INTO Billing_Has (reservationID, creditCard, billingName, billingAddress) VALUES ('22', '3920573819474825', 'Michael Williams', '92 Birch Road');
@@ -225,32 +252,32 @@ INSERT INTO Room (roomNum, floor, status, hotelName, hotelAddress, staffID) VALU
 INSERT INTO Room (roomNum, floor, status, hotelName, hotelAddress, staffID) VALUES ('d10', '22', 'Available', 'Hotel D', '444 Pine Ridge', '4444');
 INSERT INTO Room (roomNum, floor, status, hotelName, hotelAddress, staffID) VALUES ('e3', '4', 'Booked', 'Hotel E', '555 Granville Avenue', '5555');
 
--- INSERT INTO Standard (typeName, viewDirection) VALUES ('Standard-Mountain', 'North');
--- INSERT INTO Standard (typeName, viewDirection) VALUES ('Standard-East', 'East');
--- INSERT INTO Standard (typeName, viewDirection) VALUES ('Standard-Ocean', 'South');
--- INSERT INTO Standard (typeName, viewDirection) VALUES ('Standard-Pool', 'South');
--- INSERT INTO Standard (typeName, viewDirection) VALUES ('Standard-West', 'West');
+INSERT INTO Standard (typeName, viewDirection) VALUES ('Standard-Mountain', 'North');
+INSERT INTO Standard (typeName, viewDirection) VALUES ('Standard-East', 'East');
+INSERT INTO Standard (typeName, viewDirection) VALUES ('Standard-Ocean', 'South');
+INSERT INTO Standard (typeName, viewDirection) VALUES ('Standard-Pool', 'South');
+INSERT INTO Standard (typeName, viewDirection) VALUES ('Standard-West', 'West');
 
--- INSERT INTO Deluxe (typeName, roomService) VALUES ('Deluxe-Basic', 'Food and Beverage');
--- INSERT INTO Deluxe (typeName, roomService) VALUES ('Deluxe-Cleaning', 'Housekeeping');
--- INSERT INTO Deluxe (typeName, roomService) VALUES ('Deluxe-Gourmet', 'Food and Beverage');
--- INSERT INTO Deluxe (typeName, roomService) VALUES ('Deluxe-DryClean', 'Laundry/Dry Cleaning');
--- INSERT INTO Deluxe (typeName, roomService) VALUES ('Deluxe-Spa', 'In-Room Spa');
+INSERT INTO Deluxe (typeName, roomService) VALUES ('Deluxe-Basic', 'Food and Beverage');
+INSERT INTO Deluxe (typeName, roomService) VALUES ('Deluxe-Cleaning', 'Housekeeping');
+INSERT INTO Deluxe (typeName, roomService) VALUES ('Deluxe-Gourmet', 'Food and Beverage');
+INSERT INTO Deluxe (typeName, roomService) VALUES ('Deluxe-DryClean', 'Laundry/Dry Cleaning');
+INSERT INTO Deluxe (typeName, roomService) VALUES ('Deluxe-Spa', 'In-Room Spa');
 
--- INSERT INTO Suite (typeName, privatePool) VALUES ('Suite-Terrace', 'Pool Terrace');
--- INSERT INTO Suite (typeName, privatePool) VALUES ('Suite-Cabana', 'Pool Cabana');
--- INSERT INTO Suite (typeName, privatePool) VALUES ('Suite-Plunge', 'Plunge Pool');
--- INSERT INTO Suite (typeName, privatePool) VALUES ('Suite-Courtyard', 'Pool Courtyard');
--- INSERT INTO Suite (typeName, privatePool) VALUES ('Suite-Infinity', 'Infinity Pool');
+INSERT INTO Suite (typeName, privatePoolAccess) VALUES ('Suite-Terrace', 'Pool Terrace');
+INSERT INTO Suite (typeName, privatePoolAccess) VALUES ('Suite-Cabana', 'Pool Cabana');
+INSERT INTO Suite (typeName, privatePoolAccess) VALUES ('Suite-Plunge', 'Plunge Pool');
+INSERT INTO Suite (typeName, privatePoolAccess) VALUES ('Suite-Courtyard', 'Pool Courtyard');
+INSERT INTO Suite (typeName, privatePoolAccess) VALUES ('Suite-Infinity', 'Infinity Pool');
 
--- INSERT INTO Executive (typeName, executiveAmenities) VALUES ('Executive-Jacuzzi', 'Jacuzzi');
--- INSERT INTO Executive (typeName, executiveAmenities) VALUES ('Executive-Butler', 'Butler Service');
--- INSERT INTO Executive (typeName, executiveAmenities) VALUES ('Executive-Chauffeur', 'Private Chauffeur');
--- INSERT INTO Executive (typeName, executiveAmenities) VALUES ('Executive-Balcony', 'Private Balcony');
--- INSERT INTO Executive (typeName, executiveAmenities) VALUES ('Executive-Valet', 'Valet Parking');
+INSERT INTO Executive (typeName, executiveAmenities) VALUES ('Executive-Jacuzzi', 'Jacuzzi');
+INSERT INTO Executive (typeName, executiveAmenities) VALUES ('Executive-Butler', 'Butler Service');
+INSERT INTO Executive (typeName, executiveAmenities) VALUES ('Executive-Chauffeur', 'Private Chauffeur');
+INSERT INTO Executive (typeName, executiveAmenities) VALUES ('Executive-Balcony', 'Private Balcony');
+INSERT INTO Executive (typeName, executiveAmenities) VALUES ('Executive-Valet', 'Valet Parking');
 
--- INSERT INTO Family (typeName, rate, numBedrooms, numParkingSpaces) VALUES ('Family-Hut', '260', '2', '1');
--- INSERT INTO Family (typeName, rate, numBedrooms, numParkingSpaces) VALUES ('Family-Cabin', '310', '2', '2');
--- INSERT INTO Family (typeName, rate, numBedrooms, numParkingSpaces) VALUES ('Family-Caravan', '250', '2', '3');
--- INSERT INTO Family (typeName, rate, numBedrooms, numParkingSpaces) VALUES ('Family-Couple', '195', '1', '1');
--- INSERT INTO Family (typeName, rate, numBedrooms, numParkingSpaces) VALUES ('Family-Extended', '370', '3', '2');
+INSERT INTO Family (typeName, numBedrooms, numParkingSpaces) VALUES ('Family-Hut', '2', '1');
+INSERT INTO Family (typeName, numBedrooms, numParkingSpaces) VALUES ('Family-Cabin', '2', '2');
+INSERT INTO Family (typeName, numBedrooms, numParkingSpaces) VALUES ('Family-Caravan', '2', '3');
+INSERT INTO Family (typeName, numBedrooms, numParkingSpaces) VALUES ('Family-Couple', '1', '1');
+INSERT INTO Family (typeName, numBedrooms, numParkingSpaces) VALUES ('Family-Extended', '3', '2');
