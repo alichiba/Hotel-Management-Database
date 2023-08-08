@@ -158,10 +158,18 @@
             $status = $_POST['formStatus'];
 
 
-            executePlainSQL("SELECT R.roomNum, R.floor, R.status, CS.staffID, CS.firstName, CS.lastName
+            $result = executePlainSQL("SELECT R.roomNum, R.floor, R.status, CS.staffID, CS.firstName, CS.lastName
                                 FROM Room R, CleaningStaff_assignedBy CS
-                                    WHERE R.staffID = CS.staffID AND R.status = " . $status . "");
+                                    WHERE R.staffID = CS.staffID AND R.status = ''" . $status . "'");
             OCICommit($db_conn);
+
+            echo "<br>Retrieved data from Room and CleaningStaff_assignedBy:<br>";
+            echo "<table>";
+            echo "<tr><th>Room Num</th><th>Floor</th><th>Status</th><th>StaffID</th><th>First Name</th><th>Last Name</th></tr>";
+            while (($row = OCI_Fetch_Array($result, OCI_BOTH)) != false) {
+                echo "<tr><td>" . $row[0] . "</td><td>" . $row[1] . "</td><td>" . $row[2] . "</td><td>" . $row[3] . "</td><td>" . $row[4] . "</td><td>" . $row[5] . "</td></tr>"; //or just use "echo $row[0]"
+            }
+            echo "</table>";
         }
 
         // PROJECTION Query - Aggregation with Group By (number of customers per hotel)
