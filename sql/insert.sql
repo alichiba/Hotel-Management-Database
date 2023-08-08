@@ -1,3 +1,5 @@
+-- start insert.sql
+
 INSERT INTO CitySeason (city, peakSeason) VALUES ('Vancouver', 'Summer ');
 INSERT INTO CitySeason (city, peakSeason) VALUES ('Cancun', 'Winter');
 INSERT INTO CitySeason (city, peakSeason) VALUES ('Richmond', 'Spring');
