@@ -160,7 +160,7 @@
 
             $result = executePlainSQL("SELECT R.roomNum, R.floor, R.status, CS.staffID, CS.firstName, CS.lastName
                                 FROM Room R, CleaningStaff_assignedBy CS
-                                    WHERE R.staffID = CS.staffID AND R.status = ''" . $status . "'");
+                                    WHERE R.staffID = CS.staffID AND R.status = '" . $status . "'");
             OCICommit($db_conn);
 
             echo "<br>Retrieved data from Room and CleaningStaff_assignedBy:<br>";
