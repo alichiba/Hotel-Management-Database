@@ -1,3 +1,5 @@
+-- start create.sql
+
 CREATE TABLE CitySeason (
 	city		CHAR(20),
 	peakSeason	CHAR(20),
