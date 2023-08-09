@@ -1,3 +1,5 @@
+-- start create.sql
+
 CREATE TABLE CitySeason (
 	city		CHAR(20),
 	peakSeason	CHAR(20),
@@ -81,14 +83,15 @@ CREATE TABLE Billing_Has (
 	billingName		CHAR(20),
 	billingAddress	CHAR(30),
 	PRIMARY KEY (creditCard, reservationID),
-	FOREIGN KEY (reservationID) REFERENCES Reservation(reservationID)
+	FOREIGN KEY (reservationID) REFERENCES Reservation(reservationID) ON DELETE CASCADE
+	ON UPDATE CASCADE
 );
 
 CREATE TABLE Views (
 	employeeID     	INT,
 	reservationID	INT,
 	PRIMARY KEY (reservationID, employeeID),
-	FOREIGN KEY (reservationID) REFERENCES Reservation(reservationID),
+	FOREIGN KEY (reservationID) REFERENCES Reservation(reservationID) ON DELETE CASCADE,
 	FOREIGN KEY (employeeID) REFERENCES ManagementEmployee_Manages(employeeID)
 );
 
