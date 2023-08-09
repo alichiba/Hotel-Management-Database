@@ -1,4 +1,4 @@
-  <html>
+<html>
     <head>
         <title>Hotel Reservation</title>
     </head>
@@ -16,7 +16,7 @@
         </form>
 
     <h2>Insert Query</h2>
-        <p>Creating a new reservation with a start and an end date</p>
+        <p>Creating a new reservation with a start and end date</p>
         <form method="POST" action="reservation.php"> <!--refresh page when submitted-->
 	        <input type="hidden" id="insertQueryRequest" name="insertQueryRequest">
 	        ReservationID: <input type="text" name="resID"> <br /><br />
@@ -31,6 +31,7 @@
         <p>Updating an existing reservation with a new start and end date</p>
         <form method="POST" action="reservation.php"> <!--refresh page when submitted-->
             <input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
+	        ReservationID: <input type="text" name="resID"> <br /><br />
             Old Start Date: <input type="text" name="oldStart"> <br /><br />
             New Start Date: <input type="text" name="newStart"> <br /><br />
             Old End Date: <input type="text" name="oldEnd"> <br /><br />
@@ -122,17 +123,6 @@
             }
         }
 
-        // function printResult($result) { //prints results from a select statement
-        //     echo "<br>Retrieved data from table demoTable:<br>";
-        //     echo "<table>";
-        //     echo "<tr><th>ID</th><th>Name</th></tr>";
-
-        //     while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
-        //         echo "<tr><td>" . $row["ID"] . "</td><td>" . $row["NAME"] . "</td></tr>"; //or just use "echo $row[0]"
-        //     }
-
-        //     echo "</table>";
-        // }
 
         function printResult($result) { //prints results from a select statement
             echo "<br>Retrieved data from table:<br>";
@@ -179,7 +169,7 @@
 
             // Create new table
             echo "<br> creating new table <br>";
-            executePlainSQL("CREATE TABLE reservationTable (id int PRIMARY KEY, startDate char(30), endDate char(30))");
+            executePlainSQL("CREATE TABLE reservationTable (reservationID int PRIMARY KEY, startDate char(30), endDate char(30))");
             OCICommit($db_conn);
         }
 
@@ -205,11 +195,15 @@
         function handleUpdateRequest() {
             global $db_conn;
 
-            $old_name = $_POST['oldName'];
-            $new_name = $_POST['newName'];
+            $res_id = $_POST['resID'];
+            $old_start = $_POST['oldStart'];
+            $new_start = $_POST['newStart'];
+            $old_end = $_POST['oldEnd'];
+            $new_end = $_POST['newEnd'];
 
             // you need the wrap the old name and new name values with single quotations
-            executePlainSQL("UPDATE demoTable SET name='" . $new_name . "' WHERE name='" . $old_name . "'");
+            executePlainSQL("UPDATE reservationTable SET startDate='" . $new_start . "' WHERE startDate='" . $old_start . "' AND reservationID='" . $res_id . "'");
+            executePlainSQL("UPDATE reservationTable SET endDate='" . $new_end . "' WHERE endDate='" . $old_end . "' AND reservationID='" . $res_id . "'");
             OCICommit($db_conn);
         }
 
@@ -222,6 +216,8 @@
                 echo "<br> The number of tuples in reservationTable: " . $row[0] . "<br>";
             }
         }
+
+
 
         // HANDLE ALL POST ROUTES
 	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
