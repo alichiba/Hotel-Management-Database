@@ -7,7 +7,7 @@
     <h1>Reservation</h1>
 
     <h2>Reset</h2>
-        <p>If you wish to reset the table press on the reset button. If this is the first time you're running this page, you MUST use reset</p>
+        <p>Resetting the hotel reservation form </p>
 
         <form method="POST" action="reservation.php">
             <!-- if you want another page to load after the button is clicked, you have to specify that page in the action parameter -->
@@ -16,12 +16,20 @@
         </form>
 
     <h2>Insert Query</h2>
-        <p>Creating a new reservation with a start and end date</p>
+        <p>Creating a new reservation with a reservationID, start date, and end date</p>
         <form method="POST" action="reservation.php"> <!--refresh page when submitted-->
 	        <input type="hidden" id="insertQueryRequest" name="insertQueryRequest">
 	        ReservationID: <input type="text" name="resID"> <br /><br />
 	        Start Date: <input type="text" name="startDate"> <br /><br />
 	        End Date: <input type="text" name="endDate"> <br /><br />
+            Room Type Name: 
+                <select name = "typeName">
+                    <option value = "Standard-Mountain">Standard-Mountain</option>
+                    <option value = "Deluxe-Cleaning">Deluxe-Cleaning</option>
+                    <option value = "Suite-Infinity">Suite-Infinity</option>
+                    <option value = "Executive-Jacuzzi">Executive-Jacuzzi</option>
+                    <option value = "Family-Couple">Family-Couple</option>
+                </select> <br /><br />
 	        <input type="submit" value="Insert" name="insertSubmit"></p>
         </form>
 
@@ -38,6 +46,23 @@
             New End Date: <input type="text" name="newEnd"> <br /><br />
             <input type="submit" value="Update" name="updateSubmit"></p>
         </form>
+
+        <h2>Delete Query</h2>
+        <p>Deleting a reservation and the associated billing information based on room typeName</p>
+        <form method="POST" action="reservation.php"> <!--refresh page when submitted-->
+            <input type="hidden" id="deleteQueryRequest" name="deleteQueryRequest">
+            <select name = "formStatus">
+                <option value = "Standard-Mountain">Standard-Mountain</option>
+                <option value = "Deluxe-Cleaning">Deluxe-Cleaning</option>
+                <option value = "Suite-Infinity">Suite-Infinity</option>
+                <option value = "Executive-Jacuzzi">Executive-Jacuzzi</option>
+                <option value = "Family-Couple">Family-Couple</option>
+            </select>
+
+            <input type="submit" value="Delete" name="deleteSubmit"></p>
+        </form>
+
+
 
         <h2>Count the Tuples in ReservationTable</h2>
         <form method="GET" action="reservation.php"> <!--refresh page when submitted-->
@@ -162,18 +187,7 @@
         }
 
 
-        function handleResetRequest() {
-            global $db_conn;
-            // Drop old table
-            executePlainSQL("DROP TABLE reservationTable");
-
-            // Create new table
-            echo "<br> creating new table <br>";
-            executePlainSQL("CREATE TABLE reservationTable (reservationID int PRIMARY KEY, startDate char(30), endDate char(30))");
-            OCICommit($db_conn);
-        }
-
-
+        // INSERT Query 
         function handleInsertRequest() {
             global $db_conn;
 
@@ -181,17 +195,27 @@
             $tuple = array (
                 ":bind1" => $_POST['resID'],    // retrieves parameter passed by user
                 ":bind2" => $_POST['startDate'],
-                ":bind3" => $_POST['endDate']
+                ":bind3" => $_POST['endDate'],
+                ":bind4" => $_POST['typeName']
             );
 
             $alltuples = array (
                 $tuple
             );
 
-            executeBoundSQL("insert into reservationTable values (:bind1, :bind2, :bind3)", $alltuples); // helper function - queries script into database
+            executeBoundSQL("insert into reservationTable values (:bind1, :bind2, :bind3, :bind4)", $alltuples); // helper function - queries script into database
             OCICommit($db_conn); // must commit when adding smth to oracle database
+
+            echo "<br>Retrieved data from Reservation:<br>";
+            echo "<table>";
+            echo "<tr><th>ReservationID</th><th>startDate</th><th>endDate</th><th>typeName</th></tr>";
+            while (($row = OCI_Fetch_Array($result, OCI_BOTH)) != false) {
+                echo $row[0];
+            }
+            echo "<table>";
         }
 
+        // UPDATE Query 
         function handleUpdateRequest() {
             global $db_conn;
 
@@ -205,6 +229,14 @@
             executePlainSQL("UPDATE reservationTable SET startDate='" . $new_start . "' WHERE startDate='" . $old_start . "' AND reservationID='" . $res_id . "'");
             executePlainSQL("UPDATE reservationTable SET endDate='" . $new_end . "' WHERE endDate='" . $old_end . "' AND reservationID='" . $res_id . "'");
             OCICommit($db_conn);
+
+            echo "<br>Retrieved data from Reservation:<br>";
+            echo "<table>";
+            echo "<tr><th>ReservationID</th><th>startDate</th><th>endDate</th><th>typeName</th></tr>";
+            while (($row = OCI_Fetch_Array($result, OCI_BOTH)) != false) {
+                echo $row[0];
+            }
+            echo "<table>";
         }
 
         function handleCountRequest() {
@@ -217,7 +249,35 @@
             }
         }
 
+        // DELETE Query - deleting reservation based of room typeName
+        // !!! Update CREATE TABLE statements to have ON DELETE CASCADE for all? or just billing_has? or RoomType on delete cascade?
+        function handleDeleteRequest() {
+            global $db_conn;
 
+            $status = $_POST['formStatus'];
+
+            $result = executePlainSQL("DELETE FROM Reservation WHERE typeName= '" . $status . "'");
+
+            echo "<br>Retrieved data from Reservation:<br>";
+            echo "<table>";
+            echo "<tr><th>ReservationID</th><th>startDate</th><th>endDate</th><th>typeName</th></tr>";
+            while (($row = OCI_Fetch_Array($result, OCI_BOTH)) != false) {
+                echo $row[0];
+            }
+            echo "<table>";
+        }
+   
+        // RESET Form - Dropping and creating tables
+        function handleResetRequest() {
+            global $db_conn;
+            // Drop old table
+            executePlainSQL("DROP TABLE reservationTable");
+
+            // Create new table
+            echo "<br> creating new table <br>";
+            executePlainSQL("CREATE TABLE reservationTable (reservationID int PRIMARY KEY, startDate char(30), endDate char(30), typeName char(30))");
+            OCICommit($db_conn);
+        }
 
         // HANDLE ALL POST ROUTES
 	// A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
@@ -229,6 +289,8 @@
                     handleUpdateRequest();
                 } else if (array_key_exists('insertQueryRequest', $_POST)) {
                     handleInsertRequest();
+                } else if (array_key_exists('deleteQueryRequest', $_POST)) {
+                    handleDeleteRequest();
                 }
 
                 disconnectFromDB(); // program is completed, application has finished running (1-3s). when submitting new request, restarting application from start-end
@@ -247,7 +309,7 @@
             }
         }
 
-		if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit'])) {
+		if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['deleteSubmit'])) {
             handlePOSTRequest();
         } else if (isset($_GET['countTupleRequest'])) {
             handleGETRequest();
