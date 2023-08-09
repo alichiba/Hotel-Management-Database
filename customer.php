@@ -21,6 +21,35 @@
               <input type="submit" name="highRooms"></p>
         </form>
 
+        <h2>Insert Query</h2>
+        <p>Creating a new reservation with a start and end date</p>
+        <form method="POST" action="customer.php"> <!--refresh page when submitted-->
+	        <input type="hidden" id="insertQueryRequest" name="insertQueryRequest">
+	        ReservationID: <input type="text" name="resID"> <br /><br />
+	        Start Date: <input type="text" name="startDate"> <br /><br />
+	        End Date: <input type="text" name="endDate"> <br /><br />
+	        <input type="submit" value="Insert" name="insertSubmit"></p>
+        </form>
+
+        <h2>Update Query</h2>
+        <p>Updating an existing reservation with a new start and end date</p>
+        <form method="POST" action="customer.php"> <!--refresh page when submitted-->
+            <input type="hidden" id="updateQueryRequest" name="updateQueryRequest">
+	        ReservationID: <input type="text" name="resID"> <br /><br />
+            Old Start Date: <input type="text" name="oldStart"> <br /><br />
+            New Start Date: <input type="text" name="newStart"> <br /><br />
+            Old End Date: <input type="text" name="oldEnd"> <br /><br />
+            New End Date: <input type="text" name="newEnd"> <br /><br />
+            <input type="submit" value="Update" name="updateSubmit"></p>
+        </form>
+
+        <h2>Count the Tuples in ReservationTable</h2>
+        <form method="GET" action="customer.php"> <!--refresh page when submitted-->
+            <input type="hidden" id="countTupleRequest" name="countTupleRequest">
+            <input type="submit" name="countTuples"></p>
+        </form>
+
+
         <a href="index.php"><button type="button">Back</button></a>
         
         <?php
@@ -133,6 +162,7 @@
             OCILogoff($db_conn);
         }
 
+
         // PROJECTION Query - find hotels with rooms available
         function handleCountRequest() {
             global $db_conn;
@@ -175,6 +205,58 @@
             echo "</table>";
         }
 
+        function handleInsertRequest() {
+            global $db_conn;
+
+            //Getting the values from user and insert data into the table (array)
+            $tuple = array (
+                ":bind1" => $_POST['resID'],    // retrieves parameter passed by user
+                ":bind2" => $_POST["startDate"],
+                ":bind3" => $_POST["endDate"],
+                ":bind4" => '333',
+                ":bind5" => 'Hotel C',
+                ":bind6" => '333 Oak Lane',
+                ":bind7" => 'Standard-East',
+            );
+
+            $alltuples = array (
+                $tuple
+            );
+
+            echo "<br> here " . "<br>";
+
+            executeBoundSQL("insert into Reservation values (:bind1,  TO_DATE(:bind2,'YYYY-MM-DD'), TO_DATE(:bind3,'YYYY-MM-DD'), :bind4, :bind5, :bind6, :bind7)", $alltuples); // helper function - queries script into database
+            echo "<br> Inserted: " . "<br>";
+            OCICommit($db_conn); // must commit when adding smth to oracle database
+            
+        }
+
+        function handleUpdateRequest() {
+            global $db_conn;
+
+            $res_id = $_POST['resID'];
+            $old_start = $_POST['oldStart'];
+            $new_start = $_POST['newStart'];
+            $old_end = $_POST['oldEnd'];
+            $new_end = $_POST['newEnd'];
+
+            // you need the wrap the old name and new name values with single quotations
+            executePlainSQL("UPDATE Reservation SET startDate='" . $new_start . "' WHERE startDate='" . $old_start . "' AND reservationID='" . $res_id . "'");
+            executePlainSQL("UPDATE Reservation SET endDate='" . $new_end . "' WHERE endDate='" . $old_end . "' AND reservationID='" . $res_id . "'");
+            OCICommit($db_conn);
+        }
+
+        function handleCountTupleRequest() {
+            global $db_conn;
+
+            $result = executePlainSQL("SELECT Count(*) FROM Reservation");
+
+            if (($row = oci_fetch_row($result)) != false) {
+                echo "<br> The number of tuples in Reservation: " . $row[0] . "<br>";
+            }
+        }
+
+
         // HANDLE ALL POST ROUTES
      	    // A better coding practice is to have one method that reroutes your requests accordingly. It will make it easier to add/remove functionality.
         function handlePOSTRequest() {
@@ -185,7 +267,7 @@
                     handleUpdateRequest();
                 } else if (array_key_exists('insertQueryRequest', $_POST)) {
                     handleInsertRequest();
-                }
+                } 
 
                 disconnectFromDB();
             }
@@ -201,55 +283,20 @@
                 if (array_key_exists('highRooms', $_GET)) {
                     handleHighRoomsRequest();
                 }
+                if (array_key_exists('countTuples', $_GET)) {
+                    handleCountTupleRequest();
+                }
 
                 disconnectFromDB();
            }
         }
 
-        if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit'])) {
+        
+        if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['updateQueryRequest']) || isset($_POST['insertQueryRequest'])) {
             handlePOSTRequest();
-        } else if (isset($_GET['countRoomRequest']) || isset($_GET['highRoomsRequest'])) {
+        } else if (isset($_GET['countRoomRequest']) || isset($_GET['highRoomsRequest']) || isset($_GET['countTupleRequest'])) {
              handleGETRequest();
         }
-
-//         function handleUpdateRequest() {
-//             global $db_conn;
-//
-//             $old_name = $_POST['oldName'];
-//             $new_name = $_POST['newName'];
-//
-//
-//             executePlainSQL("UPDATE demoTable SET name='" . $new_name . "' WHERE name='" . $old_name . "'");
-//             OCICommit($db_conn);
-//         }
-//
-//         function handleResetRequest() {
-//             global $db_conn;
-//             // Drop old table
-//             executePlainSQL("DROP TABLE demoTable");
-//
-//             // Create new table
-//             echo "<br> creating new table <br>";
-//             executePlainSQL("CREATE TABLE demoTable (id int PRIMARY KEY, name char(30))");
-//             OCICommit($db_conn);
-//           }        
-
-//         function handleInsertRequest() {
-//             global $db_conn;
-//
-//             //Getting the values from user and insert data into the table
-//             $tuple = array (
-//                 ":bind1" => $_POST['insNo'],
-//                 ":bind2" => $_POST['insName']
-//             );
-//
-//             $alltuples = array (
-//             $tuple
-//             );
-//
-//             executeBoundSQL("insert into demoTable values (:bind1, :bind2)", $alltuples);
-//             OCICommit($db_conn);
-//         }
 
       	?>
 
