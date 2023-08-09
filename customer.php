@@ -28,6 +28,14 @@
 	        ReservationID: <input type="text" name="resID"> <br /><br />
 	        Start Date: <input type="text" name="startDate"> <br /><br />
 	        End Date: <input type="text" name="endDate"> <br /><br />
+            Room Type Name: 
+                <select name = "typeName">
+                    <option value = "Standard-Mountain">Standard-Mountain</option>
+                    <option value = "Deluxe-Cleaning">Deluxe-Cleaning</option>
+                    <option value = "Suite-Infinity">Suite-Infinity</option>
+                    <option value = "Executive-Jacuzzi">Executive-Jacuzzi</option>
+                    <option value = "Family-Couple">Family-Couple</option>
+                </select> <br /><br />
 	        <input type="submit" value="Insert" name="insertSubmit"></p>
         </form>
 
@@ -42,6 +50,40 @@
             New End Date: <input type="text" name="newEnd"> <br /><br />
             <input type="submit" value="Update" name="updateSubmit"></p>
         </form>
+
+        <h2>Delete Query</h2>
+        <p>Deleting a reservation and the associated billing information based on room typeName</p>
+        <form method="POST" action="customer.php"> <!--refresh page when submitted-->
+            <input type="hidden" id="deleteQueryRequest" name="deleteQueryRequest">
+            <!-- <select name = "formStatus">
+                <option value = "Standard-Mountain">Standard-Mountain</option>
+                <option value = "Deluxe-Cleaning">Deluxe-Cleaning</option>
+                <option value = "Suite-Infinity">Suite-Infinity</option>
+                <option value = "Executive-Jacuzzi">Executive-Jacuzzi</option>
+                <option value = "Family-Couple">Family-Couple</option>
+            </select> -->
+            ReservationID: <input type="text" name="resID"> <br /><br />
+            
+
+            <input type="submit" value="Delete" name="deleteSubmit"></p>
+        </form>
+
+        <h2>Select Query</h2>
+        <p>Viewing reservations at a specific hotel with a start date of after input</p>
+        <form method="GET" action="customer.php"> <!--refresh page when submitted-->
+            <input type="hidden" id="selectQueryRequest" name="selectQueryRequest">
+            Hotel Name:
+                <select name = "formStatus">
+                    <option value = "Hotel A">Hotel A</option>
+                    <option value = "Hotel B">Hotel B</option>
+                    <option value = "Hotel C">Hotel C</option>
+                    <option value = "Hotel D">Hotel D</option>
+                    <option value = "Hotel E">Hotel E</option>
+                </select> <br /><br />
+            Start Date: <input type="text" name="startDate"> <br /><br />    
+            <input type="submit" value="Select" name="selectSubmit"></p>
+        </form>
+
 
         <h2>Count the Tuples in ReservationTable</h2>
         <form method="GET" action="customer.php"> <!--refresh page when submitted-->
@@ -177,7 +219,7 @@
             echo "<table>";
             echo "<tr><th>Room Num</th><th>Floor</th><th>Status</th><th>Hotel Name</th><th>Hotel Address</th></tr>";
             while (($row = OCI_Fetch_Array($result, OCI_BOTH)) != false) {
-                echo "<tr><td>" . $row[0] . "</td><td>" . $row[1] . "</td><td>" . $row[2] . "</td><td>" . $row[3] . "</td><td>" . $row[4] . "</td></tr>"; //or just use "echo $row[0]"
+                echo "<tr><td>" . $row[0] . "</td><td>" . $row[1] . "</td><td>" . $row[2] . "</td><td>" . $row[3] . "</td><td>" . $row[4] . "</td></tr>"; 
             }
             echo "</table>";
         }
@@ -200,11 +242,12 @@
             echo "<table>";
             echo "<tr><th>Floor</th><th>Hotel Name</th><th>Hotel Address</th><th>numHigh</th></tr>";
             while (($row = OCI_Fetch_Array($result, OCI_BOTH)) != false) {
-                echo "<tr><td>" . $row[0] . "</td><td>" . $row[1] . "</td><td>" . $row[2] . "</td><td>" . $row[3] . "</td></tr>"; //or just use "echo $row[0]"
+                echo "<tr><td>" . $row[0] . "</td><td>" . $row[1] . "</td><td>" . $row[2] . "</td><td>" . $row[3] . "</td></tr>"; 
             }
             echo "</table>";
         }
 
+        // INSERT QUERY
         function handleInsertRequest() {
             global $db_conn;
 
@@ -216,21 +259,20 @@
                 ":bind4" => '333',
                 ":bind5" => 'Hotel C',
                 ":bind6" => '333 Oak Lane',
-                ":bind7" => 'Standard-East',
+                ":bind7" => $_POST['typeName']
             );
 
             $alltuples = array (
                 $tuple
             );
 
-            echo "<br> here " . "<br>";
-
             executeBoundSQL("insert into Reservation values (:bind1,  TO_DATE(:bind2,'YYYY-MM-DD'), TO_DATE(:bind3,'YYYY-MM-DD'), :bind4, :bind5, :bind6, :bind7)", $alltuples); // helper function - queries script into database
-            echo "<br> Inserted: " . "<br>";
+            echo "<br> Inserted new reservation " . "<br>";
             OCICommit($db_conn); // must commit when adding smth to oracle database
             
         }
 
+        // UPDATE QUERY
         function handleUpdateRequest() {
             global $db_conn;
 
@@ -240,20 +282,85 @@
             $old_end = $_POST['oldEnd'];
             $new_end = $_POST['newEnd'];
 
-            // you need the wrap the old name and new name values with single quotations
-            executePlainSQL("UPDATE Reservation SET startDate='" . $new_start . "' WHERE startDate='" . $old_start . "' AND reservationID='" . $res_id . "'");
-            executePlainSQL("UPDATE Reservation SET endDate='" . $new_end . "' WHERE endDate='" . $old_end . "' AND reservationID='" . $res_id . "'");
+    
+            executePlainSQL("UPDATE Reservation SET startDate=TO_DATE('" . $new_start . "', 'YYYY-MM-DD') WHERE startDate=TO_DATE('" . $old_start . "', 'YYYY-MM-DD') AND reservationID='" . $res_id . "'");
+            executePlainSQL("UPDATE Reservation SET endDate=TO_DATE('" . $new_end . "', 'YYYY-MM-DD') WHERE endDate=TO_DATE('" . $old_end . "', 'YYYY-MM-DD') AND reservationID='" . $res_id . "'");
             OCICommit($db_conn);
+
+            $result = executePlainSQL("SELECT * FROM Reservation");
+
+
+            echo "<br>Retrieved data from Reservation:<br>";
+            echo "<table>";
+            echo "<tr><th>ReservationID</th><th>startDate</th><th>endDate</th><th>customerID</th><th>hotelName</th><th>hotelAddress</th><th>typeName</th></tr>";
+            while (($row = OCI_Fetch_Array($result, OCI_BOTH)) != false) {
+                echo "<tr><td>" . $row[0] . "</td><td>" . $row[1] . "</td><td>" . $row[2] . "</td><td>" . $row[3] . "</td><td>" . $row[4] . "</td><td>" . $row[5] . "</td><td>" . $row[6] . "</td></tr>";
+            }
+            echo "<table>";
         }
 
+        // DELETE Query - deleting reservation based of room typeName
+        // !!! Update CREATE TABLE statements to have ON DELETE CASCADE for all? or just billing_has? or RoomType on delete cascade?
+        function handleDeleteRequest() {
+            global $db_conn;
+
+            // $status = $_POST['formStatus'];
+            $res_id = $_POST['resID'];
+
+            // executePlainSQL("DELETE FROM Reservation WHERE typeName= '" . $status . "'");
+            executePlainSQL("DELETE FROM Reservation WHERE reservationID = '" . $res_id . "'");
+            $result = executePlainSQL("SELECT * FROM Reservation");
+            OCICommit($db_conn);
+
+
+            echo "<br>Retrieved data from Reservation:<br>";
+            echo "<table>";
+            echo "<tr><th>ReservationID</th><th>startDate</th><th>endDate</th><th>customerID</th><th>hotelName</th><th>hotelAddress</th><th>typeName</th></tr>";
+            while (($row = OCI_Fetch_Array($result, OCI_BOTH)) != false) {
+                echo "<tr><td>" . $row[0] . "</td><td>" . $row[1] . "</td><td>" . $row[2] . "</td><td>" . $row[3] . "</td><td>" . $row[4] . "</td><td>" . $row[5] . "</td><td>" . $row[6] . "</td></tr>";
+            }
+            echo "<table>";
+        }
+
+        // SELECT Query - viewing reservations based off of hotelName and start date
+        // !!! Double check > operator works
+        function handleSelectRequest() {
+            global $db_conn;
+
+            $status = $_GET['formStatus'];
+            $start_date = $_GET['startDate'];
+
+            $result = executePlainSQL("SELECT * FROM Reservation WHERE hotelName= '" . $status . "' AND startDate > TO_DATE('" . $start_date . "', 'YYYY-MM-DD')");
+
+
+            echo "<br>Retrieved data from Reservation:<br>";
+            echo "<table>";
+            echo "<tr><th>ReservationID</th><th>startDate</th><th>endDate</th><th>customerID</th><th>hotelName</th><th>hotelAddress</th><th>typeName</th></tr>";
+            while (($row = OCI_Fetch_Array($result, OCI_BOTH)) != false) {
+                echo "<tr><td>" . $row[0] . "</td><td>" . $row[1] . "</td><td>" . $row[2] . "</td><td>" . $row[3] . "</td><td>" . $row[4] . "</td><td>" . $row[5] . "</td><td>" . $row[6] . "</td></tr>";
+            }
+            echo "<table>";
+
+        }
+
+        // Count tuple in reservation
         function handleCountTupleRequest() {
             global $db_conn;
 
             $result = executePlainSQL("SELECT Count(*) FROM Reservation");
+            $result1 = executePlainSQL("SELECT * FROM Reservation");
 
             if (($row = oci_fetch_row($result)) != false) {
                 echo "<br> The number of tuples in Reservation: " . $row[0] . "<br>";
             }
+
+            echo "<br>Retrieved data from Reservation:<br>";
+            echo "<table>";
+            echo "<tr><th>ReservationID</th><th>startDate</th><th>endDate</th><th>customerID</th><th>hotelName</th><th>hotelAddress</th><th>typeName</th></tr>";
+            while (($row = OCI_Fetch_Array($result1, OCI_BOTH)) != false) {
+                echo "<tr><td>" . $row[0] . "</td><td>" . $row[1] . "</td><td>" . $row[2] . "</td><td>" . $row[3] . "</td><td>" . $row[4] . "</td><td>" . $row[5] . "</td><td>" . $row[6] . "</td></tr>";
+            }
+            echo "<table>";
         }
 
 
@@ -267,6 +374,8 @@
                     handleUpdateRequest();
                 } else if (array_key_exists('insertQueryRequest', $_POST)) {
                     handleInsertRequest();
+                } else if (array_key_exists('deleteQueryRequest', $_POST)) {
+                    handleDeleteRequest();
                 } 
 
                 disconnectFromDB();
@@ -286,15 +395,18 @@
                 if (array_key_exists('countTuples', $_GET)) {
                     handleCountTupleRequest();
                 }
+                if (array_key_exists('selectSubmit', $_GET)) {
+                    handleSelectRequest();
+                }
 
                 disconnectFromDB();
            }
         }
 
         
-        if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['updateQueryRequest']) || isset($_POST['insertQueryRequest'])) {
+        if (isset($_POST['reset']) || isset($_POST['updateSubmit']) || isset($_POST['insertSubmit']) || isset($_POST['updateQueryRequest']) || isset($_POST['insertQueryRequest']) || isset($_POST['deleteQueryRequest'])) {
             handlePOSTRequest();
-        } else if (isset($_GET['countRoomRequest']) || isset($_GET['highRoomsRequest']) || isset($_GET['countTupleRequest'])) {
+        } else if (isset($_GET['countRoomRequest']) || isset($_GET['highRoomsRequest']) || isset($_GET['countTupleRequest']) || isset($_GET['selectQueryRequest'])) {
              handleGETRequest();
         }
 
