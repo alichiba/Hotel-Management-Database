@@ -1,3 +1,22 @@
+-- INSERT QUERY
+-- insert new reservation (default customer, hotel, hotel address)
+insert into Reservation values (:bind1, TO_DATE(:bind2,'YYYY-MM-DD'), TO_DATE(:bind3,'YYYY-MM-DD'), :bind4, :bind5, :bind6, :bind7
+                                
+-- UPDATE QUERY
+-- update reservation dates
+UPDATE Reservation SET startDate=TO_DATE('" . $new_start . "', 'YYYY-MM-DD') WHERE startDate=TO_DATE('" . $old_start . "', 'YYYY-MM-DD') AND reservationID='" . $res_id . "'
+UPDATE Reservation SET endDate=TO_DATE('" . $new_end . "', 'YYYY-MM-DD') WHERE endDate=TO_DATE('" . $old_end . "', 'YYYY-MM-DD') AND reservationID='" . $res_id . "'
+
+-- DELETE QUERY
+-- delete reservation
+DELETE FROM Reservation WHERE reservationID = '" . $res_id . "'                                
+                              
+-- SELECTION QUERY 
+-- select reservations at hotels after specified date
+SELECT * FROM Reservation WHERE hotelName= '" . $status . "' AND startDate > TO_DATE('" . $start_date . "', 'YYYY-MM-DD')
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------                               
+
 -- PROJECTION QUERY
 -- "Select the room number, floor, status, hotel name and hotel address for the available rooms"
 SELECT roomNum, floor, status, hotelName, hotelAddress
