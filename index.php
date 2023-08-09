@@ -9,6 +9,7 @@
         <h2>Choose your view:</h2>
         <a href="management.php"><button type="button">Management Employee</button></a>
         <a href="customer.php"><button type="button">Customer</button></a>
-        <a href="reservation.php"><button type="button">Customer</button></a>
+        <a href="reservation.php"><button type="button">Reservation</button></a>
+        
     </body>
 </html>
