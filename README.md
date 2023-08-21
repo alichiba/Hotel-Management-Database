@@ -16,13 +16,13 @@ This project will be implemented using the UBC CPSC department’s oracle databa
 
 ### ER Diagrams:
 
-(Initial ER Diagram from Milestone 1):
+Initial ER Diagram
 
 <img width="671" alt="Screen Shot 2023-07-28 at 11 52 49 PM" src="https://media.github.students.cs.ubc.ca/user/14937/files/20d20435-cf9e-4c1a-87cf-b2a50688ac0e">
 
 ---
 
-(Updated ER Diagram from Milestone 2):
+Updated ER Diagram
 
 <img width="880" alt="Screen Shot 2023-07-28 at 11 53 04 PM" src="https://media.github.students.cs.ubc.ca/user/14937/files/6ae348e2-441d-4b81-849e-1bb3bc94ee76">
 
