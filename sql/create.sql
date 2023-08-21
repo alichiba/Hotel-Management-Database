@@ -83,7 +83,7 @@ CREATE TABLE Billing_Has (
 	billingName		CHAR(20),
 	billingAddress	CHAR(30),
 	PRIMARY KEY (creditCard, reservationID),
-	FOREIGN KEY (reservationID) REFERENCES Reservation(reservationID)
+	FOREIGN KEY (reservationID) REFERENCES Reservation(reservationID) ON DELETE CASCADE
 );
 
 CREATE TABLE Views (
